@@ -61,7 +61,11 @@ class LifeExpectancyByCountry
   def self.nil_records
     data = self.read_data
     group = data.select{|i| i.Numeric_Value.to_f.nil? }.last
-    return group
+    if group.nil?
+      "The data set is complete"
+    else
+      group
+    end
   end
 
   def self.highest_life_expectancy_group
