@@ -61,7 +61,7 @@ class LifeExpectancyByCountry
   def self.nil_records
     data = self.read_data
     group = data.select{|i| i.Numeric_Value.to_f.nil? }.last
-    return "#{group.Numeric_Value}/#{group.Sex}/#{group.Country}/#{group.Year}"
+    return group
   end
 
   def self.highest_life_expectancy_group
@@ -129,13 +129,13 @@ class LifeExpectancyByCountry
 
   def self.global_mean
     data = self.read_data
-    life_expectancy = data.select{|record| record.Sex == gender}.map(&:Numeric_Value)  
+    life_expectancy = data.select{|record| record.Sex == "Both sexes"}.map(&:Numeric_Value)  
     return life_expectancy.map(&:to_i).reduce(:+) / life_expectancy.size
   end
 
   def self.global_median
     data = self.read_data
-    life_expectancy = data.select{|record| record.Sex == gender}.map(&:Numeric_Value)  
+    life_expectancy = data.select{|record| record.Sex == "Both sexes"}.map(&:Numeric_Value)  
     sorted = life_expectancy.map(&:to_i).sort
     middle = life_expectancy.size / 2
     return life_expectancy.size.odd? ? sorted[middle] : 0.5*(sorted[middle] + sorted[middle - 1])
