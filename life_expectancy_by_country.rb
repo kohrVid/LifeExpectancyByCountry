@@ -18,7 +18,26 @@ class LifeExpectancyByCountry
       end
       records << life_expectancy_by_country
     end
-    records.select!{|i| i.GHO == "WHOSIS_000001"}
+    records.select!{|i| i.send(:GHO) == "WHOSIS_000001"}
+  end
+  
+  def self.print_to_file(output)
+    puts "Would you like to print this data to a file? (Y/N)"
+    wanna_print = gets.chomp
+    if wanna_print == "Y"
+      puts "Please type the name of the file that you wish to create:"
+      file_name = gets.chomp
+      CSV.open(file_name, "wb") do |csv|
+	if output.is_a?(Array)
+	csv << COLUMNS.map(&:to_s)
+	output.each do |row|
+	  csv << COLUMNS.map {|col| row.send(col)}
+	end
+	else
+        csv << COLUMNS.map {|col| output.send(col)}
+	end
+      end
+    end
   end
 
   def self.list_of_countries
@@ -34,28 +53,31 @@ class LifeExpectancyByCountry
     data = LifeExpectancyByCountry.read_data
     group = data.select{|i| i.Year == year.to_s && i.Sex = "Both sexes"}
       .sort_by{|i| i.Numeric_Value.to_f}.last
-    return "#{group.Numeric_Value}/#{group.Country}"
+    puts "#{group.Numeric_Value}/#{group.Country}"
+    puts self.print_to_file(group)
   end
   
   def self.lowest_life_expectancy_by_year(year)
     data = self.read_data
     group = data.select{|i| i.Year == year.to_s && i.Sex = "Both sexes"}
       .sort_by{|i| i.Numeric_Value.to_f}.first
-    return "#{group.Numeric_Value}/#{group.Country}"
+    puts "#{group.Numeric_Value}/#{group.Country}\n"
+    puts self.print_to_file(group)
   end
   
   def self.region_with_highest_life_expectancy(year)
     data = self.read_data
     group = data.select{|i| i.Year == year.to_s && i.Sex = "Both sexes"}
       .sort_by{|i| i.Numeric_Value.to_f}.last
-    return group.WHO_region
+    puts self.print_to_file(group)
   end
   
   def self.region_with_lowest_life_expectancy_by_year(year)
     data = self.read_data
     group = data.select{|i| i.Year == year.to_s && i.Sex = "Both sexes"}
       .sort_by{|i| i.Numeric_Value.to_f}.first
-    return group.WHO_region
+    puts group.WHO_region
+    puts self.print_to_file(group)
   end
 
   def self.nil_records
@@ -64,20 +86,24 @@ class LifeExpectancyByCountry
     if group.nil?
       "The data set is complete"
     else
-      group
+      puts group
+      put self.print_to_file(group)
     end
   end
 
   def self.highest_life_expectancy_group
     data = self.read_data
     group = data.sort_by{|i| i.Numeric_Value.to_f}.last
-    return "#{group.Numeric_Value}/#{group.Sex}/#{group.Country}/#{group.Year}"
+    puts "#{group.Numeric_Value}/#{group.Sex}/#{group.Country}/#{group.Year}"
+    puts self.print_to_file(group)
   end
+
 
   def self.lowest_life_expectancy_group
     data = self.read_data
     group = data.sort_by{|i| i.Numeric_Value.to_f}.first
-    return "#{group.Numeric_Value}/#{group.Sex}/#{group.Country}/#{group.Year}"
+    puts "#{group.Numeric_Value}/#{group.Sex}/#{group.Country}/#{group.Year}"
+    puts self.print_to_file(group)
   end
 
 

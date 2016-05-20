@@ -97,7 +97,8 @@ options = {
   16=>{ step1: ["Find the international median life expectancy", Proc.new { puts LifeExpectancyByCountry.global_median }]},
   17=>{ step1: ["Find the international mean life expectancy by gender", method(:option17)]},
   18=>{ step1: ["Find the international median life expectancy by gender", method(:option18)]},
-  19=>{ step1: ["View the gaps in the collected data", Proc.new { puts LifeExpectancyByCountry.nil_records }]}
+  19=>{ step1: ["Print all rows of data to a file", Proc.new { puts LifeExpectancyByCountry.print_to_file(LifeExpectancyByCountry.read_data) }]},
+  20=>{ step1: ["View the gaps in the collected data", Proc.new { puts LifeExpectancyByCountry.nil_records }]}
 }
 
 
@@ -109,16 +110,14 @@ puts "Please select from the list of options below:\n"
 
 options.each{|k, v| puts "#{k}. #{v[:step1][0]}" }
 puts 'Press "q" to quit, "h" to return home'
-@choice1 = gets.chomp.to_i1
+choice1 = gets.chomp.to_i
 options.each do |k, v|
-  if @choice1 == k
+  if choice1 == k
     puts "You have selected option ##{k}"
     v[:step1][1].call
-  elsif @choice1 == "q"
-    #fix in the morning
-  elsif @choice1 =="h"
+  elsif choice1 =="h"
     #also fix later
   end
+  #break if choice1 == "q"
 end
-
 
