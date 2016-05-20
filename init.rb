@@ -17,13 +17,13 @@ end
 def option5
     puts "Please enter the year that you would like to collect data from:"
     choice2 = gets.chomp
-    puts LifeExpectancyByCountry.region_with_highest_life_expectancy(choice2)
+    puts LifeExpectancyByCountry.region_with_highest_life_expectancy_by_year(choice2)
 end
 
 def option6
     puts "Please enter the year that you would like to collect data from:"
     choice2 = gets.chomp
-    puts LifeExpectancyByCountry.region_with_lowest_life_expectancy(choice2)
+    puts LifeExpectancyByCountry.region_with_lowest_life_expectancy_by_year(choice2)
 end
 
 def option9
@@ -101,23 +101,37 @@ options = {
   20=>{ step1: ["View the gaps in the collected data", Proc.new { puts LifeExpectancyByCountry.nil_records }]}
 }
 
+def menu(options)
+  puts "=====================================================\n"
+  puts "             Life Expectancy by Country              "
+  puts "=====================================================\n"
 
-puts "=====================================================\n"
-puts "             Life Expectancy by Country              "
-puts "=====================================================\n"
+  puts "Please select from the list of options below:\n"
 
-puts "Please select from the list of options below:\n"
-
-options.each{|k, v| puts "#{k}. #{v[:step1][0]}" }
-puts 'Press "q" to quit, "h" to return home'
-choice1 = gets.chomp.to_i
-options.each do |k, v|
-  if choice1 == k
-    puts "You have selected option ##{k}"
-    v[:step1][1].call
-  elsif choice1 =="h"
-    #also fix later
-  end
-  #break if choice1 == "q"
+  options.each{|k, v| puts "#{k}. #{v[:step1][0]}" }
+  puts 'Press "q" to quit, "h" to return home'
+  choice1 = gets.chomp.to_i
 end
 
+def return_home(options)
+  puts 'Click "h" to return to the main menu or "q" to quit'
+  choice = gets.chomp
+  if choice != "q"
+    if choice == "h"
+      main(options)
+    end
+  end
+end
+
+def main(options)
+  choice1 = menu(options)
+  options.each do |k, v|
+    if choice1 == k
+      puts "You have selected option ##{k}"
+      v[:step1][1].call
+      return_home(options)
+    end
+  end
+end
+
+main(options)

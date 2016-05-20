@@ -45,7 +45,7 @@ class LifeExpectancyByCountry
   end
 
   def self.total_records
-    self.read_data.size
+    "#{self.read_data.size} rows"
   end
 
   #using averages for both genders
@@ -53,7 +53,7 @@ class LifeExpectancyByCountry
     data = LifeExpectancyByCountry.read_data
     group = data.select{|i| i.Year == year.to_s && i.Sex = "Both sexes"}
       .sort_by{|i| i.Numeric_Value.to_f}.last
-    puts "#{group.Numeric_Value}/#{group.Country}"
+    puts "#{group.Numeric_Value} years/#{group.Country}"
     puts self.print_to_file(group)
   end
   
@@ -61,14 +61,15 @@ class LifeExpectancyByCountry
     data = self.read_data
     group = data.select{|i| i.Year == year.to_s && i.Sex = "Both sexes"}
       .sort_by{|i| i.Numeric_Value.to_f}.first
-    puts "#{group.Numeric_Value}/#{group.Country}\n"
+    puts "#{group.Numeric_Value} years/#{group.Country}\n"
     puts self.print_to_file(group)
   end
   
-  def self.region_with_highest_life_expectancy(year)
+  def self.region_with_highest_life_expectancy_by_year(year)
     data = self.read_data
     group = data.select{|i| i.Year == year.to_s && i.Sex = "Both sexes"}
       .sort_by{|i| i.Numeric_Value.to_f}.last
+    puts group.WHO_region
     puts self.print_to_file(group)
   end
   
@@ -87,14 +88,14 @@ class LifeExpectancyByCountry
       "The data set is complete"
     else
       puts group
-      put self.print_to_file(group)
+      puts self.print_to_file(group)
     end
   end
 
   def self.highest_life_expectancy_group
     data = self.read_data
     group = data.sort_by{|i| i.Numeric_Value.to_f}.last
-    puts "#{group.Numeric_Value}/#{group.Sex}/#{group.Country}/#{group.Year}"
+    puts "#{group.Numeric_Value} years/#{group.Sex}/#{group.Country}/#{group.Year}"
     puts self.print_to_file(group)
   end
 
@@ -113,7 +114,7 @@ class LifeExpectancyByCountry
     data = self.read_data
     life_expectancy = data.select{|record| record.Country == country}
       .map(&:Numeric_Value)  
-    return life_expectancy.map(&:to_i).reduce(:+) / life_expectancy.size
+    return "#{life_expectancy.map(&:to_i).reduce(:+) / life_expectancy.size} years"
   end
   
   def self.median_life_by_country(country)
@@ -122,45 +123,45 @@ class LifeExpectancyByCountry
       .map(&:Numeric_Value)  
     sorted = life_expectancy.map(&:to_i).sort
     middle = life_expectancy.size / 2
-    return life_expectancy.size.odd? ? sorted[middle] : 0.5*(sorted[middle] + sorted[middle - 1])
+    return "#{life_expectancy.size.odd? ? sorted[middle] : 0.5*(sorted[middle] + sorted[middle - 1])} years"
   end
   
   def self.mean_life_by_country_and_year(country, year)
     data = self.read_data
     life_expectancy = data.select{|record| record.Country == country && record.Year == year}
       .map(&:Numeric_Value)  
-    return life_expectancy.map(&:to_i).reduce(:+) / life_expectancy.size
+    return "#{life_expectancy.map(&:to_i).reduce(:+) / life_expectancy.size} years"
   end
   
-  def self.median_life_by_country(country, year)
+  def self.median_life_by_country_and_year(country, year)
     data = self.read_data
     life_expectancy = data.select{|record| record.Country == country && record.Year == year}
       .map(&:Numeric_Value)  
     sorted = life_expectancy.map(&:to_i).sort
     middle = life_expectancy.size / 2
-    return life_expectancy.size.odd? ? sorted[middle] : 0.5*(sorted[middle] + sorted[middle - 1])
+    return "#{life_expectancy.size.odd? ? sorted[middle] : 0.5*(sorted[middle] + sorted[middle - 1])} years"
   end
   
-  def self.mean_life_by_gender_and_country(gender,country)
+  def self.mean_life_by_gender_and_country(gender, country)
     data = self.read_data
-    life_expectancy = data.select{|record| record.Sex == gender && record.country == country}
+    life_expectancy = data.select{|record| record.Sex == gender && record.Country == country}
       .map(&:Numeric_Value)  
-    return life_expectancy.map(&:to_i).reduce(:+) / life_expectancy.size
+    return "#{life_expectancy.map(&:to_i).reduce(:+) / life_expectancy.size} years"
   end
   
   def self.median_life_by_gender_and_country(gender, country)
     data = self.read_data
-    life_expectancy = data.select{|record| record.Sex == gender && record.country == country}
+    life_expectancy = data.select{|record| record.Sex == gender && record.Country == country}
       .map(&:Numeric_Value)
     sorted = life_expectancy.map(&:to_i).sort
     middle = life_expectancy.size / 2
-    return life_expectancy.size.odd? ? sorted[middle] : 0.5*(sorted[middle] + sorted[middle - 1])
+    return "#{life_expectancy.size.odd? ? sorted[middle] : 0.5*(sorted[middle] + sorted[middle - 1])} years"
   end
 
   def self.global_mean
     data = self.read_data
     life_expectancy = data.select{|record| record.Sex == "Both sexes"}.map(&:Numeric_Value)  
-    return life_expectancy.map(&:to_i).reduce(:+) / life_expectancy.size
+    return "#{life_expectancy.map(&:to_i).reduce(:+) / life_expectancy.size} years"
   end
 
   def self.global_median
@@ -168,13 +169,13 @@ class LifeExpectancyByCountry
     life_expectancy = data.select{|record| record.Sex == "Both sexes"}.map(&:Numeric_Value)  
     sorted = life_expectancy.map(&:to_i).sort
     middle = life_expectancy.size / 2
-    return life_expectancy.size.odd? ? sorted[middle] : 0.5*(sorted[middle] + sorted[middle - 1])
+    return "#{life_expectancy.size.odd? ? sorted[middle] : 0.5*(sorted[middle] + sorted[middle - 1])} years"
   end
 
   def self.global_mean_by_gender(gender)
     data = self.read_data
     life_expectancy = data.select{ |record| record.Sex == "Both sexes" }.map(&:Numeric_Value)  
-    return life_expectancy.map(&:to_i).reduce(:+) / life_expectancy.size
+    return "#{life_expectancy.map(&:to_i).reduce(:+) / life_expectancy.size} years"
   end
   
   def self.global_median_by_gender(gender)
@@ -182,7 +183,7 @@ class LifeExpectancyByCountry
     life_expectancy = data.select{ |record| record.Sex == "Both sexes" }.map(&:Numeric_Value)
     sorted = life_expectancy.map(&:to_i).sort
     middle = life_expectancy.size / 2
-    return life_expectancy.size.odd? ? sorted[middle] : 0.5*(sorted[middle] + sorted[middle - 1])
+    return "#{life_expectancy.size.odd? ? sorted[middle] : 0.5*(sorted[middle] + sorted[middle - 1])} years"
   end
 
 end
