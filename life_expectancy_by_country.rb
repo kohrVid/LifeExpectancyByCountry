@@ -1,3 +1,4 @@
+require "pry"
 require "csv"
 class LifeExpectancyByCountry
   COLUMNS = [:GHO, :Indicator, :PUBLISHSTATE, :PUBLISH_STATES, :YEAR, :Year,
@@ -30,7 +31,7 @@ class LifeExpectancyByCountry
 
   #using averages for both genders
   def self.highest_life_expectancy_by_year(year)
-    data = self.read_data
+    data = LifeExpectancyByCountry.read_data
     group = data.select{|i| i.Year == year.to_s && i.Sex = "Both sexes"}
       .sort_by{|i| i.Numeric_Value.to_f}.last
     return "#{group.Numeric_Value}/#{group.Country}"
@@ -60,12 +61,6 @@ class LifeExpectancyByCountry
   def self.nil_records
     data = self.read_data
     group = data.select{|i| i.Numeric_Value.to_f.nil? }.last
-    return "#{group.Numeric_Value}/#{group.Sex}/#{group.Country}/#{group.Year}"
-  end
-
-  def self.lowest_life_expectancy_group
-    data = self.read_data
-    group = data.sort_by{|i| i.Numeric_Value.to_f}.last
     return "#{group.Numeric_Value}/#{group.Sex}/#{group.Country}/#{group.Year}"
   end
 
@@ -134,13 +129,13 @@ class LifeExpectancyByCountry
 
   def self.global_mean
     data = self.read_data
-    life_expectancy = data.map(&:Numeric_Value)  
+    life_expectancy = data.select{|record| record.Sex == gender}.map(&:Numeric_Value)  
     return life_expectancy.map(&:to_i).reduce(:+) / life_expectancy.size
   end
 
   def self.global_median
     data = self.read_data
-    life_expectancy = data.map(&:Numeric_Value)  
+    life_expectancy = data.select{|record| record.Sex == gender}.map(&:Numeric_Value)  
     sorted = life_expectancy.map(&:to_i).sort
     middle = life_expectancy.size / 2
     return life_expectancy.size.odd? ? sorted[middle] : 0.5*(sorted[middle] + sorted[middle - 1])
@@ -148,13 +143,13 @@ class LifeExpectancyByCountry
 
   def self.global_mean_by_gender(gender)
     data = self.read_data
-    life_expectancy = data.select{|record| record.Sex == gender}.map(&:Numeric_Value)  
+    life_expectancy = data.select{ |record| record.Sex == "Both sexes" }.map(&:Numeric_Value)  
     return life_expectancy.map(&:to_i).reduce(:+) / life_expectancy.size
   end
   
   def self.global_median_by_gender(gender)
     data = self.read_data
-    life_expectancy = data.select{|record| record.Sex == gender}.map(&:Numeric_Value)
+    life_expectancy = data.select{ |record| record.Sex == "Both sexes" }.map(&:Numeric_Value)
     sorted = life_expectancy.map(&:to_i).sort
     middle = life_expectancy.size / 2
     return life_expectancy.size.odd? ? sorted[middle] : 0.5*(sorted[middle] + sorted[middle - 1])
